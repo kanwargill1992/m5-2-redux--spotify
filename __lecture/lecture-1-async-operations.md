@@ -48,10 +48,15 @@ const App = () => {
   const dispatch = useDispatch();
 
   const handleClick = () => {
+    dispatch(startRequestingData());
     fetch("/some-data")
       .then((res) => res.json())
-      .then((data) => {})
-      .catch((err) => {});
+      .then((data) => {
+        dispatch(receiveData(data));
+      })
+      .catch((err) => {
+        dispatch(failToRetriveData(err));
+      });
   };
 
   return <button onClick={handleClick}>Do something</button>;
@@ -85,16 +90,16 @@ const App = () => {
     fetch("/hockey")
       .then((res) => res.json())
       .then((scores) => {
-        // TODO
+        dispatch(receiveHockeyScores(scores));
       });
 
     fetch("/baseball")
       .then((res) => res.json())
       .then((scores) => {
-        // TODO
+        dispatch(receiveBaseBallScores(scores));
       });
   }, []);
-
+  // it will update twice
   return <Scores />;
 };
 ```
@@ -117,18 +122,61 @@ const receiveAllScores = () => ({
 const App = () => {
   const dispatch = useDispatch();
 
-  React.useEffect(() => {
+  React.useEffect(() => {async(dispatch(receiveAllScores))
     // Dispatch `receiveAllScores` after BOTH fetches have completed
 
     fetch("/hockey").then((scores) => {
-      dispatch(receiveHockeyScores(scores));
+      .then(res=>res.json())
+      .then(scores=>{
+        dispatch(receiveHockeyScores(scores));
+      })
+
     });
 
     fetch("/baseball").then((scores) => {
-      dispatch(receiveBaseballScores(scores));
+      .then(res=>res.json())
+      .then(scores=>{dispatch(receiveBaseballScores(scores));})
+
     });
+    .then((=>{
+      dispatch(receiveAllData())
+    }))
   }, []);
 
   return <Scores />;
 };
+
+```
+
+const receiveAllScores = () => ({
+type: "RECEIVE_ALL_SCORES",
+});
+
+const App = () => {
+const dispatch = useDispatch();
+
+React.useEffect(() => {async(dispatch(receiveAllScores))
+// Dispatch `receiveAllScores` after BOTH fetches have completed
+let hockeyData,baseballData={}
+const hockeyPromise = fetch(./hockey)
+.then(res=>res.json())
+.then(scores=>{
+dispatch(receiveHockey(scores))
+})
+const baseballPromise = fetch(./hockey)
+.then(res=>res.json())
+
+    .then(scores=>{
+      dispatch(receiveBaseBallScores(scores))
+    })
+    Promise.all([hockeyPromise,baseballPromise])
+    .then((=>dispatch(receiveAllScores())))
+
+}, []);
+
+return <Scores />;
+};
+
+```
+
 ```

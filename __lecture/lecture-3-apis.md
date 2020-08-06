@@ -43,7 +43,9 @@ const App = () => {
   const [data, setData] = React.useState(null);
 
   React.useEffect(() => {
-    fetch("https://tdbank.com/balance?secretKey=abcd1234").then(setData);
+    fetch("https://tdbank.com/balance?secretKey=abcd1234")
+      .then((res) => res.json())
+      .then((data) => setData(data));
   }, []);
 
   return `Your bank balance is ${data.balance}`;
