@@ -23,19 +23,20 @@ const App = () => {
     dispatch(requestAccessToken());
     fetch("/spotify_access_token")
       .then((res) => res.json())
-      .then((json) => dispatch(receiveAccessToken(json)))
+      .then((data) => dispatch(receiveAccessToken(data.access_token)))
       .catch((err) => dispatch(receiveAccessTokenError()));
   }, []);
   return (
     <>
-      <GlobalStyle />
-
       <Router>
+        <GlobalStyle />
         <Switch>
           <Route path="/artist/:artistId">
             <ArtistRoute />
           </Route>
-          <Redirect to={`/artist/${DEFAULT_ARTIST_ID}`} />
+          <Route exact path="/">
+            <Redirect from="/" to={`/artist/${DEFAULT_ARTIST_ID}`} />
+          </Route>
         </Switch>
       </Router>
     </>
